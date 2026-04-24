@@ -1,0 +1,22 @@
+problem description
+
+Business problem:
+A small construction/fit‑out company currently outsources most of its technical drawings.
+This is slow and expensive, especially for repetitive elements (mirrors, frames, panels) that start from hand‑drawn sketches with dimensions.
+The goal of this project is to build an AI‑assisted pipeline that takes a simple photo/scan of a sketch and automatically generates a parametric CAD drawing template in FreeCAD (or DXF), which can then be quickly checked and adjusted by a human.
+
+# technical details later
+
+for later - diagram:
+
+Step 1: Worker creates a hand sketch with basic dimensions
+
+Step 2: Worker takes a photo and uploads it to the system
+
+Step 3: The system analyses the sketch (shape + dimensions)
+
+Step 4: The system selects or fills a CAD template (FreeCAD)
+
+Step 5: The system exports a technical drawing (FCStd/DXF)
+
+Step 6: Human reviews and approves or adjusts the drawing

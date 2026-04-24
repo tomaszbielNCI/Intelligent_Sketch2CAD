@@ -1,0 +1,66 @@
+# CAD Templates Configuration
+templates:
+  mirror:
+    description: "Standard mirror template with frame"
+    default_parameters:
+      width: 600.0  # mm
+      height: 400.0  # mm
+      frame_width: 20.0  # mm
+      thickness: 5.0  # mm
+    features:
+      - rectangular_base
+      - frame_border
+      - mounting_holes
+    
+  frame:
+    description: "Picture frame template"
+    default_parameters:
+      outer_width: 500.0  # mm
+      outer_height: 700.0  # mm
+      inner_width: 450.0  # mm
+      inner_height: 650.0  # mm
+      depth: 25.0  # mm
+    features:
+      - rectangular_frame
+      - backing_groove
+      
+  panel:
+    description: "Wall panel template"
+    default_parameters:
+      width: 1200.0  # mm
+      height: 2400.0  # mm
+      thickness: 18.0  # mm
+      edge_profile: "square"
+    features:
+      - rectangular_panel
+      - edge_finish
+      
+# Shape to Template Mapping
+shape_mapping:
+  rectangle:
+    - mirror
+    - frame
+    - panel
+  square:
+    - mirror
+    - frame
+  circle:
+    - mirror  # round mirror
+
+# Dimension Extraction Rules
+dimension_rules:
+  width_patterns:
+    - "width"
+    - "w"
+    - "szer"
+    - "↔"
+  height_patterns:
+    - "height"
+    - "h"
+    - "wys"
+    - "↕"
+  thickness_patterns:
+    - "thickness"
+    - "t"
+    - "grub"
+    - "depth"

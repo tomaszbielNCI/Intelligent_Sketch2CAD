@@ -1,0 +1,51 @@
+# Project Configuration
+project:
+  name: "Intelligent Sketch to CAD"
+  version: "1.0.0"
+
+# Paths
+paths:
+  input_dir: "data/raw/sketches"
+  processed_dir: "data/processed"
+  labels_dir: "data/labels"
+  output_dir: "output/cad_files"
+  log_dir: "output/logs"
+  models_dir: "models/checkpoints"
+  templates_dir: "templates/cad_templates"
+
+# Image Processing
+image:
+  max_size: [1024, 1024]
+  dpi: 300
+  blur_kernel: [5, 5]
+  canny_threshold1: 50
+  canny_threshold2: 150
+
+# OCR Settings
+ocr:
+  tesseract_config: "--psm 6 --oem 3"
+  min_confidence: 0.6
+  dimension_patterns:
+    - r'\d+\.?\d*\s*mm'
+    - r'\d+\.?\d*\s*cm'
+    - r'\d+\.?\d*\s*m'
+
+# Shape Detection
+shape_detection:
+  contour_approximation: 0.02
+  min_contour_area: 100
+  max_contour_area: 50000
+  angle_tolerance: 5.0
+
+# CAD Generation
+cad:
+  default_units: "mm"
+  precision: 0.1
+  layer_name: "Sketch_Layer"
+
+# Logging
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  max_file_size: "10MB"
+  backup_count: 5

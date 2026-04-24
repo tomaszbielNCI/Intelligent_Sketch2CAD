@@ -1,0 +1,21 @@
+```mermaid
+graph TD
+    A[Hand Sketch] --> B[Photo/Scan Input]
+    B --> C[Image Preprocessing]
+    C --> D[Shape Detection]
+    C --> E[Text/Dimension OCR]
+    D --> F[Shape Classification]
+    E --> G[Dimension Extraction]
+    F --> H[Template Selection]
+    G --> H
+    H --> I[Parameter Mapping]
+    I --> J[CAD Generation]
+    J --> K[FreeCAD Model]
+    K --> L[Export FCStd/DXF]
+    L --> M[Human Review]
+    M --> N[Final CAD Drawing]
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style N fill:#9f9,stroke:#333,stroke-width:2px
+    style J fill:#bbf,stroke:#333,stroke-width:2px
+```
