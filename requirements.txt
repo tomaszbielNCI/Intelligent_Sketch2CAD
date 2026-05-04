@@ -1,10 +1,23 @@
-opencv-python>=4.8.0
-pytesseract>=0.3.10
-pyyaml>=6.0
+opencv-python==4.10.0.84
+pytesseract==0.3.13  # OCR dims
 numpy>=1.24.0
+pandas>=2.0.0
+scikit-image>=0.21.0
+# freecad - wymaga instalacji FreeCAD aplikacji (nie przez pip)
+# https://github.com/FreeCAD/FreeCAD
+cadquery==2.4.0   # Alternatywa do parametric CAD
+torch>=2.0.0
+torchvision>=0.15.0  # Dla YOLO/ControlNet jeśli ML shapes
+streamlit==1.38.0 # UI demo
+pyyaml>=6.0            # Config
+pytest>=7.4.0            # Tests
+loguru>=0.7.0            # Logging
 pillow>=10.0.0
-freecad>=0.20.0
 matplotlib>=3.7.0
-pytest>=7.4.0
 click>=8.1.0
 tqdm>=4.65.0
+# SAM2 - Segment Anything 2
+# pip install git+https://github.com/facebookresearch/sam2.git
+# lub: pip install sam2
+# Dodatkowe zależności dla SAM2
+# opencv-python, matplotlib, pillow, numpy - już zainstalowane

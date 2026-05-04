@@ -1,8 +1,8 @@
 """CAD generation module for creating parametric models from sketch analysis."""
 
-import logging
 from typing import Dict, List, Optional, Any
 from pathlib import Path
+from loguru import logger
 
 try:
     import FreeCAD
@@ -10,7 +10,14 @@ try:
     import Draft
     import Mesh
 except ImportError:
-    logging.warning("FreeCAD not available. CAD generation will be limited.")
+    logger.warning("FreeCAD not available. CAD generation will be limited.")
+
+try:
+    import cadquery as cq
+    CADQUERY_AVAILABLE = True
+except ImportError:
+    logger.warning("CadQuery not available. Using FreeCAD only.")
+    CADQUERY_AVAILABLE = False
 
 
 class CADGenerator:
@@ -20,7 +27,7 @@ class CADGenerator:
         self.config = config
         self.templates = templates
         self.cad_config = config.get('cad', {})
-        self.logger = logging.getLogger(__name__)
+        self.logger = logger
         
         # Initialize FreeCAD document
         try:

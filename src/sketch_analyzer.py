@@ -6,6 +6,7 @@ import pytesseract
 import re
 from typing import Dict, List, Tuple, Optional
 from pathlib import Path
+from loguru import logger
 
 from .utils import preprocess_image, enhance_edges, find_contours
 

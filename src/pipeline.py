@@ -1,8 +1,8 @@
 """Main pipeline module for Intelligent Sketch to CAD processing."""
 
-import logging
 from pathlib import Path
 from typing import Dict, Optional
+from loguru import logger
 
 from .sketch_analyzer import SketchAnalyzer
 from .cad_generator import CADGenerator

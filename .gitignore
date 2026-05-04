@@ -56,3 +56,34 @@ models/checkpoints/*
 # Temporary files
 *.tmp
 *.temp
+
+# Large model and data files
+*.pt
+*.pth
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+
+# Configuration files
+*.yaml
+*.yml
+
+# Image files (large ones)
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.tiff
+*.tif
+
+# Document files
+*.pdf
+*.docx
+*.doc
+
+# Intermediate and output data
+intermediate_data/*
+output_data/*
+!intermediate_data/.gitkeep
+!output_data/.gitkeep

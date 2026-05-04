@@ -35,6 +35,12 @@ cd Intelligent_Sketch2CAD
 pip install -r requirements.txt
 ```
 
+**Note**: Some packages require special attention:
+- **FreeCAD**: May need conda installation: `conda install -c conda-forge freecad`
+- **CadQuery**: Alternative parametric CAD library
+- **PyTorch**: For ML-based shape detection (optional)
+- **Streamlit**: For web interface
+
 3. Install Tesseract OCR:
 - **Windows**: Download from [Tesseract at UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki)
 - **macOS**: `brew install tesseract`
@@ -47,14 +53,30 @@ pip install -r requirements.txt
 
 ## Usage
 
-### Basic Usage
+### Web Interface (Recommended)
+
+Launch the Streamlit web interface:
+```bash
+streamlit run app.py
+```
+
+The web interface provides:
+- 📤 Drag-and-drop file upload
+- 🎯 Real-time processing visualization
+- 📊 Analysis results display
+- 📥 Direct download of CAD files
+- 🔄 Batch processing capabilities
+
+### Command Line Interface
+
+#### Basic Usage
 
 Process a single sketch:
 ```bash
 python main.py --input data/raw/sketches/sketch1.jpg
 ```
 
-### Advanced Usage
+#### Advanced Usage
 
 Batch process multiple sketches:
 ```bash

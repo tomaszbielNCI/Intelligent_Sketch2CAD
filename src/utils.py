@@ -1,30 +1,36 @@
 """Utility functions for Intelligent Sketch to CAD."""
 
-import logging
 import os
 from pathlib import Path
 from typing import Tuple, List
 import cv2
 import numpy as np
+from loguru import logger
 
 
-def setup_logging(log_dir: str = "output/logs", log_level: str = "INFO") -> logging.Logger:
-    """Setup logging configuration."""
+def setup_logging(log_dir: str = "output/logs", log_level: str = "INFO"):
+    """Setup logging configuration using loguru."""
     log_path = Path(log_dir)
     log_path.mkdir(parents=True, exist_ok=True)
     
     log_file = log_path / "sketch_to_cad.log"
     
-    logging.basicConfig(
-        level=getattr(logging, log_level.upper()),
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        handlers=[
-            logging.FileHandler(log_file),
-            logging.StreamHandler()
-        ]
+    # Remove default handler and add custom ones
+    logger.remove()
+    logger.add(
+        str(log_file),
+        level=log_level,
+        format="{time:YYYY-MM-DD HH:mm:ss} | {name} | {level} | {message}",
+        rotation="10 MB",
+        retention="7 days"
+    )
+    logger.add(
+        lambda msg: print(msg, end=""),
+        level=log_level,
+        format="{time:HH:mm:ss} | {level} | {message}"
     )
     
-    return logging.getLogger(__name__)
+    return logger
 
 
 def preprocess_image(image_path: str, max_size: Tuple[int, int] = (1024, 1024)) -> np.ndarray:
