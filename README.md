@@ -1,7 +1,20 @@
 # Intelligent Sketch2CAD
-====================
 
-AI-assisted pipeline that converts hand-drawn sketches with dimensions into technical drawings and CAD models.
+**Vertical Slice** – Converts hand-drawn technical sketches into professional technical drawings (PDF, DXF) compatible with **FreeCAD** for glass construction and fitting (windows, doors, mirrors).
+
+## 🎯 Real-World Application
+
+This project solves a real business problem for a glass construction and fitting company (windows, doors, mirrors). Instead of outsourcing technical drawings or spending hours in AutoCAD, the owner can now:
+1. Take a photo of a hand-drawn sketch
+2. Run the pipeline
+3. Get a ready-to-use technical drawing (PDF/DXF) with dimensions, mounting holes, and title block
+4. Open directly in **FreeCAD** for further editing or CAM export
+
+**Tested use case**: Bathroom mirror – 857×660 mm with 4 mounting holes (⌀36 mm)
+
+## 🔧 Pipeline Workflow
+
+Raw Sketch → SAM2 (background removal) → Adaptive Threshold → Component Filtering → Thinning → DeepLSD (line detection) → Classification → Rectangle & Circle Detection → Calibration (px → mm) → Technical Drawing (PDF/DXF) → FreeCAD
 
 ## 🏗️ Project Architecture
 
@@ -65,24 +78,6 @@ graph TD
     style B fill:#bbf,stroke:#333,stroke-width:2px
     style F fill:#bbf,stroke:#333,stroke-width:2px
     style N fill:#9f9,stroke:#333,stroke-width:2px
-```
-
-#### **Legacy Pipeline** (`src/sketch2cad_pipeline.py`) - For development
-Basic pipeline without SAM2 preprocessing:
-
-```mermaid
-graph TD
-    A[Preprocessed Image] --> B[Thinning]
-    B --> C[DeepLSD Line Detection]
-    C --> D[Line Classification]
-    D --> E[Shape Detection]
-    E --> F[Rectangle Detection]
-    E --> G[Circle Detection]
-    F --> H[Visualization]
-    G --> H
-    H --> I[JSON Export]
-    H --> J[PNG Export]
-    H --> K[PDF Export]
 ```
 
 #### 1. **Image Preprocessing**
@@ -182,227 +177,136 @@ Streamlit-based web interface (`streamlit_app/app.py`):
 
 ### Installation
 
-#### 1. Clone Repository
 ```bash
+# Clone repository
 git clone https://github.com/tomaszbielNCI/Intelligent_Sketch2CAD.git
 cd Intelligent_Sketch2CAD
-```
 
-#### 2. Create Virtual Environment
-```bash
+# Create virtual environment
 python -m venv .venv
-source .venv/bin/activate  # Linux/Mac
-.venv\Scripts\activate     # Windows
-```
+.venv\Scripts\activate  # Windows
 
-#### 3. Install Dependencies
-```bash
+# Install dependencies
 pip install -r requirements.txt
-```
 
-#### 4. Setup DeepLSD (Required)
-```bash
-# DeepLSD is included as a git submodule
-git submodule update --init --recursive
-
-# Install DeepLSD dependencies
-cd DeepLSD
-pip install -r requirements.txt
-cd ..
-
-# Download DeepLSD model
-# Place model at: DeepLSD/weights/deeplsd_md.tar
-```
-
-#### 5. Setup SAM2 (Optional but Recommended)
-```bash
-# Clone SAM2 repository
-git clone https://github.com/facebookresearch/segment-anything-2.git
-
-# Install SAM2
-cd segment-anything-2
-pip install -e .
-
-# Download SAM2 model (small version recommended)
-# Download from: https://github.com/facebookresearch/segment-anything-2/releases
-# Place in project root:
+# Download SAM2 model (place in project root)
 # - sam2_hiera_small.pt
 # - sam2_hiera_s.yaml
+
+# DeepLSD model should be at: DeepLSD/weights/deeplsd_md.tar
 ```
 
-#### 6. Verify Installation
-```bash
-# Test DeepLSD model loading
-python src/full_sketch2cad_pipeline.py --no-save
-```
+### Run Pipeline
 
-### Running Pipeline
-
-#### **Full Automatic Pipeline (Recommended)**
 ```bash
-# Process all images in input_data/raw_sketches/
+# Process default image (input_data/raw_sketches/WhatsApp Image 2026-04-24 at 21.41.48.jpeg)
 python src/full_sketch2cad_pipeline.py
 
 # Process specific image
-python src/full_sketch2cad_pipeline.py --image "path/to/your/image.jpg"
+python src/full_sketch2cad_pipeline.py --image "path/to/your/sketch.jpg"
 
-# Test without saving
+# Test without saving files
 python src/full_sketch2cad_pipeline.py --no-save
 ```
 
-#### **Legacy Pipeline**
-```bash
-# Process default image (latest in intermediate_data/)
-python src/sketch2cad_pipeline.py
+## 📁 Input / Output
 
-# Process specific image
-python src/sketch2cad_pipeline.py --image path/to/sketch.jpg
+| Type | Location | Format |
+|------|----------|--------|
+| Input sketches | `input_data/raw_sketches/` | JPG, PNG, JPEG |
+| Output JSON | `output_data/full_pipeline_*.json` | Detection data |
+| Output PNG | `output_data/technical_drawing_*.png` | Color-coded visualization |
+| Output PDF | `output_data/technical_drawing_*.pdf` | Professional technical drawing |
+| Output DXF | `output_data/sketch_*.dxf` | CAD format (FreeCAD compatible) |
 
-# Custom project directory
-python src/sketch2cad_pipeline.py --project-dir /path/to/project
+## 🖼️ Technical Drawing Output
 
-# Process without saving files
-python src/sketch2cad_pipeline.py --no-save
+The pipeline generates a professional technical drawing fully compatible with **FreeCAD**:
+- Main rectangle in real dimensions (calibrated from sketch)
+- Mounting holes with crosshairs
+- Dimension lines (width, height, hole spacing, edge offsets)
+- Hole diameter annotation
+- Title block (glass type, thickness, project info, date)
+
+**FreeCAD compatibility:**
+- **DXF export** – can be opened directly in FreeCAD's Draft Workbench
+- **PDF output** – ready for printing or sharing with clients
+- **JSON data** – can be used to generate parametric FreeCAD models via Python script
+
+**Calibration**: Based on known dimensions (default: 857×660 mm) – can be modified in code.
+
+## 🏗️ Project Structure (Active Files Only)
+
+```
+Intelligent_Sketch2CAD/
+├── src/
+│   └── full_sketch2cad_pipeline.py   # MAIN PIPELINE (working)
+├── input_data/raw_sketches/          # Place sketches here
+├── output_data/                      # Results (JSON, PNG, PDF, DXF)
+├── intermediate_data/                # Temporary files
+├── DeepLSD/                          # Line detection model
+├── notebooks/                        # Development experiments
+└── requirements.txt                  # Dependencies
 ```
 
-#### **Jupyter Notebooks:**
-1. Open `notebooks/2_extract_deepLSD_v3.ipynb`
-2. Run cells sequentially
-3. Results saved to `intermediate_data/` and `outputs/`
+## 🧪 Tested On
 
-#### **Web Interface (TODO):**
-```bash
-streamlit run streamlit_app/app.py
-```
+Hand-drawn mirror sketch for glass construction (bathroom mirror)
+- Dimensions: 857×660 mm
+- 4 mounting holes (⌀36 mm)
+- White background, black lines
+- Successfully imported to FreeCAD for validation
 
-## 📁 Input/Output Formats
+## 🛠️ Use with FreeCAD
 
-### **Input**
-- **Location**: `input_data/raw_sketches/`
-- **Formats**: PNG, JPG, JPEG, TIFF, BMP
-- **Recommended**: Clean hand sketches with good contrast
-- **Size**: Any size (automatically processed)
+After running the pipeline, you can:
 
-### **Output**
-- **Location**: `output_data/`
-- **JSON**: Complete detection data with metadata
-- **PNG**: Visualization with color-coded elements
-- **PDF**: Technical drawing (TODO)
-- **DXF**: CAD format (TODO)
+**Open DXF directly in FreeCAD:**
+1. Launch FreeCAD
+2. File → Open → Select `sketch_*.dxf` from `output_data/`
+3. Switch to Draft Workbench for editing
 
-### **JSON Structure**
-```json
-{
-  "timestamp": "20260511_143013",
-  "source_image": "path/to/image.jpg",
-  "image_size": {"height": 1200, "width": 800},
-  "method": "DeepLSD v6 - filtered H/V + contour circles",
-  "rectangles": [
-    {
-      "label": "outer",
-      "x1": 100, "y1": 200, "x2": 600, "y2": 800,
-      "width_px": 500, "height_px": 600
-    }
-  ],
-  "circles": [
-    {
-      "label": "mounting_1",
-      "cx": 200, "cy": 300, "radius_px": 25,
-      "radius_mm": null, "circularity": 0.85
-    }
-  ],
-  "lines": {
-    "main": [...],
-    "dimension_lines": [...],
-    "ticks": [...]
-  },
-  "statistics": {
-    "deeplsd_raw": 344,
-    "main": 54,
-    "dimension": 38,
-    "ticks": 53,
-    "circles_mounting": 4
-  },
-  "notes": {
-    "scale_hint": "857mm = external width"
-  }
-}
-```
+**Generate parametric model from JSON:**
+- Use included JSON data to create a scripted FreeCAD model
+- Modify dimensions programmatically
 
-## 🔬 Development
+**Print PDF for client approval:**
+- The PDF contains all dimensions and specifications
+- Ready for glass order submission
 
-### **Notebooks Development**
-- Use `notebooks/` for experimentation
-- `2_extract_deepLSD_v3.ipynb` is the current reference implementation
-- `vertical_slice_0.ipynb` for end-to-end testing
+## ⚠️ Current Limitations
 
-### **Code Structure**
-- **Core pipeline**: `src/sketch2cad_pipeline.py`
-- **Alternative methods**: `src/alternative_detectors.py`
-- **Configuration**: `config/` directory
-- **Tests**: `tests/` directory
+- Requires good contrast sketch (white background, dark lines)
+- SAM2 model files must be downloaded manually
+- Real dimensions are hardcoded (857×660 mm) – can be changed in `full_sketch2cad_pipeline.py`
+- Works best for rectangular glass elements (mirrors, window panes, door glass) with circular mounting holes
 
-### **Adding New Detectors**
-1. Inherit from `LineDetector` in `alternative_detectors.py`
-2. Implement `detect_lines()` and `load_model()` methods
-3. Add to `create_detector()` factory function
-4. Update pipeline to support new detector
+## 🔬 Technologies
 
-### **Testing**
-```bash
-# Run unit tests
-python -m pytest tests/
+| Component | Technology |
+|-----------|------------|
+| Background removal | SAM2 (Meta) |
+| Line detection | DeepLSD |
+| Image processing | OpenCV |
+| Thinning | Zhang-Suen algorithm |
+| Technical drawing | Matplotlib |
+| DXF export | ezdxf |
+| CAD compatibility | FreeCAD (DXF import) |
 
-# Run specific notebook
-jupyter notebook notebooks/2_extract_deepLSD_v3.ipynb
-```
+## 📚 Academic Context
 
-## 🎯 Use Cases
+This project was developed for **Intelligent Agents and Process Automation** module at National College of Ireland.
 
-### **Current: Mirror Sketches**
-- Successfully processes hand-drawn mirror designs
-- Extracts rectangular frames and mounting holes
-- Generates technical drawings with dimensions
-
-### **Target Applications**
-- **Construction**: Window/door sketches
-- **Manufacturing**: Part design sketches
-- **Architecture**: Floor plan sketches
-- **Engineering**: Technical diagrams
-
-## 🤝 Contributing
-
-1. **Fork** repository
-2. **Create** feature branch
-3. **Implement** changes with tests
-4. **Document** new features
-5. **Submit** pull request
-
-### **Development Guidelines**
-- Follow PEP 8 style
-- Add type hints for new functions
-- Include docstrings with examples
-- Update README for new features
-- Test with sample sketches
+Automation types demonstrated:
+- **AI/Agentic automation**: DeepLSD + SAM2 for intelligent line detection
+- **RPA automation**: Watchdog script for folder monitoring (separate file)
 
 ## 📄 License
 
-This project is licensed under MIT License - see LICENSE file for details.
+MIT License – see LICENSE file for details.
 
-## 🙏 Acknowledgments
+## 👤 Author
 
-- **DeepLSD**: Line segment detection model
-- **OpenCV**: Computer vision operations
-- **PyTorch**: Deep learning framework
-- **Streamlit**: Web interface framework
-- **Matplotlib**: Visualization
+Tomasz Biel – MSc in Artificial Intelligence
 
-## 📞 Contact
-
-For questions, issues, or contributions:
-- **GitHub**: [tomaszbielNCI/Intelligent_Sketch2CAD](https://github.com/tomaszbielNCI/Intelligent_Sketch2CAD)
-- **Issues**: [GitHub Issues](https://github.com/tomaszbielNCI/Intelligent_Sketch2CAD/issues)
-
----
-
-**Note**: This is an active research project. Some features are in development (marked as TODO). The core pipeline is functional for mirror sketch processing.
+**Status**: ✅ Vertical slice complete – from raw sketch to professional technical drawing (PDF/DXF), fully compatible with **FreeCAD** – ready for glass fitting orders

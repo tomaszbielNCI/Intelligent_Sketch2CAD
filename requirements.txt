@@ -1,24 +1,20 @@
+# ============================================
+# CORE DEPENDENCIES (working pipeline)
+# ============================================
 opencv-contrib-python==4.10.0.84
-pytesseract==0.3.13  # OCR dims
 numpy>=1.24.0
-pandas>=2.0.0
-scikit-image>=0.21.0
-# freecad - wymaga instalacji FreeCAD aplikacji (nie przez pip)
-# https://github.com/FreeCAD/FreeCAD
-cadquery==2.4.0   # Alternatywa do parametric CAD
-torch>=2.0.0
-torchvision>=0.15.0  # Dla YOLO/ControlNet jeśli ML shapes
-streamlit==1.38.0 # UI demo
-pyyaml>=6.0            # Config
-pytest>=7.4.0            # Tests
-loguru>=0.7.0            # Logging
-pillow>=10.0.0
 matplotlib>=3.7.0
+pillow>=10.0.0
+torch>=2.0.0
+ezdxf>=1.0.0
+loguru>=0.7.0
 click>=8.1.0
-tqdm>=4.65.0
-# SAM2 - Segment Anything 2
-# pip install git+https://github.com/facebookresearch/sam2.git
-# lub: pip install sam2
-# Dodatkowe zależności dla SAM2
-# opencv-python, matplotlib, pillow, numpy - już zainstalowane
-anthropic>=0.25.0  # Claude API
+pyyaml>=6.0
+
+# ============================================
+# OPTIONAL (for future TODO features - NOT REQUIRED for vertical slice)
+# ============================================
+# pytesseract==0.3.13      # OCR for dimensions (TODO)
+# cadquery==2.4.0          # Parametric CAD (TODO)
+# torchvision>=0.15.0      # For YOLO (TODO)
+# streamlit==1.38.0        # Web UI (TODO)
