@@ -100,3 +100,6 @@ intermediate_data/*
 output_data/*
 !intermediate_data/.gitkeep
 !output_data/.gitkeep
+
+# Archive directory
+archive/

@@ -57,7 +57,7 @@ def test_full_pipeline():
 def check_output_files():
     """Check what files were created."""
     print("\nChecking output files...")
-    output_dir = Path("C:/python/Intelligent_Sketch2CAD/output_data")
+    output_dir = Path("/output_data")
     
     if not output_dir.exists():
         print("Output directory does not exist!")

@@ -12,7 +12,7 @@ def setup_project_structure():
     """Create and organize project structure properly."""
     
     # Define project root
-    project_root = Path(r"C:\python\Intelligent_Sketch2CAD")
+    project_root = Path(r"/")
     
     print("🔧 Setting up Intelligent_Sketch2CAD project structure...")
     print(f"Project root: {project_root}")
