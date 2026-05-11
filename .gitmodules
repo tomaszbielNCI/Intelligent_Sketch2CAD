@@ -1,0 +1,3 @@
+[submodule "DeepLSD"]
+	path = DeepLSD
+	url = https://github.com/cherubicXN/DeepLSD.git

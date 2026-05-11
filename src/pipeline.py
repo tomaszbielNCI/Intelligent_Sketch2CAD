@@ -7,6 +7,7 @@ from loguru import logger
 from .sketch_analyzer import SketchAnalyzer
 from .cad_generator import CADGenerator
 from .utils import setup_logging, save_intermediate_result
+from config.claude_config import ClaudeAPI
 
 
 class SketchToCADPipeline:
@@ -28,6 +29,14 @@ class SketchToCADPipeline:
         # Initialize components
         self.sketch_analyzer = SketchAnalyzer(self.config)
         self.cad_generator = CADGenerator(self.config, self.templates)
+        
+        # Initialize Claude API (optional)
+        try:
+            self.claude_api = ClaudeAPI()
+            self.logger.info("Claude API initialized successfully")
+        except Exception as e:
+            self.logger.warning(f"Claude API not available: {e}")
+            self.claude_api = None
         
         self.logger.info("Sketch to CAD Pipeline initialized")
     

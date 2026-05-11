@@ -1,211 +1,378 @@
-# Intelligent Sketch to CAD
+# Intelligent Sketch2CAD
+====================
 
-AI-assisted pipeline that converts hand-drawn sketches with dimensions into parametric CAD models using FreeCAD.
+AI-assisted pipeline that converts hand-drawn sketches with dimensions into technical drawings and CAD models.
 
-## Overview
+## 🏗️ Project Architecture
 
-This project helps small construction/fit-out companies automate the process of creating technical drawings from hand sketches. It analyzes sketches, extracts shapes and dimensions, and generates parametric CAD templates that can be quickly reviewed and adjusted by humans.
+This project provides a complete pipeline for converting hand sketches to technical drawings, with support for multiple line detection methods and extensible architecture.
 
-## Features
+### 📁 Project Structure
 
-- **Sketch Analysis**: Computer vision and OCR to extract shapes and dimensions from hand-drawn sketches
-- **Template Matching**: Automatically selects appropriate CAD templates based on detected shapes
-- **Parametric Generation**: Creates parametric FreeCAD models with extracted dimensions
-- **Batch Processing**: Process multiple sketches automatically
-- **Configurable Templates**: Easy to extend with new CAD templates
+```
+Intelligent_Sketch2CAD/
+├── 📓 notebooks/                    # Jupyter notebooks for development and testing
+│   ├── 0_preprocessing_load_image.ipynb
+│   ├── 1_extract_contours_*.ipynb
+│   ├── 2_extract_deepLSD_*.ipynb
+│   └── vertical_slice_0.ipynb
+├── 📂 src/                          # Core pipeline modules
+│   ├── sketch2cad_pipeline.py        # Main pipeline implementation
+│   ├── alternative_detectors.py        # TODO: Alternative line detection methods
+│   └── pipeline.py                   # Existing pipeline (preserved)
+├── 📂 models/                       # Model storage
+├── 📂 streamlit_app/               # Web interface (TODO)
+│   └── app.py                        # Streamlit UI stub
+├── 📂 input_data/                   # Input sketches
+│   └── raw_sketches/               # Raw sketch images
+├── 📂 intermediate_data/             # Preprocessed images and intermediate results
+├── 📂 output_data/                  # Generated technical drawings and JSON results
+├── 📂 archive/                      # Archived files and test scripts
+├── 📂 DeepLSD/                      # DeepLSD model and code
+├── 📂 docs/                         # Documentation
+├── 📂 config/                       # Configuration files
+├── 📂 tests/                        # Unit tests
+├── app.py                            # Main application entry
+├── main.py                           # Alternative entry point
+└── requirements.txt                   # Python dependencies
+```
 
-## Installation
+### 🔧 Core Pipeline Workflow
 
-### Prerequisites
+The main pipeline (`src/sketch2cad_pipeline.py`) implements the following workflow:
 
-- Python 3.8+
-- FreeCAD (optional - for CAD generation)
-- Tesseract OCR
+```mermaid
+graph TD
+    A[Input Sketch] --> B[Preprocessing]
+    B --> C[Thinning]
+    C --> D[Line Detection]
+    D --> E[Line Classification]
+    E --> F[Rectangle Detection]
+    E --> G[Circle Detection]
+    F --> H[Visualization]
+    G --> H
+    H --> I[JSON Export]
+    H --> J[PNG Export]
+    H --> K[PDF Export]
+```
 
-### Setup
+#### 1. **Image Preprocessing**
+- Load and convert to grayscale
+- Fix image polarity (dark/light adjustment)
+- Contour-based filtering to remove noise
+- Connected components analysis
 
-1. Clone the repository:
+#### 2. **Thinning**
+- Apply Zhang-Suen thinning algorithm
+- Convert lines to 1-pixel width
+- Preserve connectivity
+
+#### 3. **Line Detection** (DeepLSD)
+- Load pre-trained DeepLSD model
+- Detect line segments with confidence scoring
+- Extract geometric properties (length, angle)
+
+#### 4. **Line Classification**
+- Classify lines into categories:
+  - **Main lines**: Long horizontal/vertical structural lines
+  - **Dimension lines**: Medium-length measurement lines
+  - **Tick marks**: Short diagonal marks at 45°/135°
+  - **Other**: Unclassified geometric elements
+  - **Noise**: Very short segments
+
+#### 5. **Shape Detection**
+- **Rectangles**: Filter and combine main H/V lines
+- **Circles**: Detect from skeletonized contours using circularity
+
+#### 6. **Output Generation**
+- JSON with all detected elements and metadata
+- PNG visualization with color-coded elements
+- PDF technical drawing (placeholder implementation)
+
+### 🤖 Alternative Line Detection Methods
+
+The project includes TODO stubs for alternative detection methods:
+
+#### **PaddleOCR** (`src/alternative_detectors.py`)
+- Extract text and geometric structures
+- Useful for dimension annotations
+- Multi-language support
+
+#### **YOLOv8-seg**
+- Semantic segmentation for geometric primitives
+- Deep learning-based object detection
+- Customizable for specific sketch types
+
+#### **ScanLSD**
+- Alternative line segment detector
+- Different algorithmic approach
+- Complementary to DeepLSD
+
+#### **Hybrid Detector**
+- Combine multiple methods
+- Voting mechanism for robustness
+- Confidence-weighted fusion
+
+### 🌐 Web Interface (TODO)
+
+Streamlit-based web interface (`streamlit_app/app.py`):
+
+#### Features to Implement:
+- **File Upload**: Drag-and-drop sketch upload
+- **Configuration Panel**: Adjust detection parameters
+- **Real-time Preview**: Live parameter adjustment
+- **Results Display**: Interactive visualization
+- **Download Options**: JSON, PNG, PDF exports
+- **Batch Processing**: Multiple image support
+- **Detector Comparison**: Side-by-side results
+
+### 📊 Current Capabilities
+
+#### ✅ **Working Features**
+- DeepLSD line detection with pre-trained model
+- Image preprocessing and thinning
+- Line classification by geometry
+- Rectangle and circle detection
+- JSON and PNG output generation
+- Mirror sketch processing (tested use case)
+
+#### 🚧 **TODO Features**
+- PDF technical drawing generation
+- PaddleOCR integration
+- YOLOv8-seg implementation
+- ScanLSD alternative
+- Streamlit web interface
+- Hybrid detection methods
+- Batch processing
+- Parameter optimization
+- Additional shape detection (arcs, ellipses)
+- Dimension text extraction
+- CAD model export (DXF/DWG)
+
+## 🚀 Quick Start
+
+### Installation
+
+#### 1. Clone Repository
 ```bash
 git clone https://github.com/tomaszbielNCI/Intelligent_Sketch2CAD.git
 cd Intelligent_Sketch2CAD
 ```
 
-2. Install Python dependencies:
+#### 2. Create Virtual Environment
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Linux/Mac
+.venv\Scripts\activate     # Windows
+```
+
+#### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-**Note**: Some packages require special attention:
-- **FreeCAD**: May need conda installation: `conda install -c conda-forge freecad`
-- **CadQuery**: Alternative parametric CAD library
-- **PyTorch**: For ML-based shape detection (optional)
-- **Streamlit**: For web interface
-
-3. Install Tesseract OCR:
-- **Windows**: Download from [Tesseract at UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki)
-- **macOS**: `brew install tesseract`
-- **Linux**: `sudo apt-get install tesseract-ocr`
-
-4. Install FreeCAD (optional):
-- **Windows**: Download from [FreeCAD website](https://www.freecadweb.org/downloads.php)
-- **macOS**: `brew install freecad`
-- **Linux**: `sudo apt-get install freecad`
-
-## Usage
-
-### Web Interface (Recommended)
-
-Launch the Streamlit web interface:
+#### 4. Setup DeepLSD (Required)
 ```bash
-streamlit run app.py
+# DeepLSD is included as a git submodule
+git submodule update --init --recursive
+
+# Install DeepLSD dependencies
+cd DeepLSD
+pip install -r requirements.txt
+cd ..
+
+# Download DeepLSD model
+# Place model at: DeepLSD/weights/deeplsd_md.tar
 ```
 
-The web interface provides:
-- 📤 Drag-and-drop file upload
-- 🎯 Real-time processing visualization
-- 📊 Analysis results display
-- 📥 Direct download of CAD files
-- 🔄 Batch processing capabilities
-
-### Command Line Interface
-
-#### Basic Usage
-
-Process a single sketch:
+#### 5. Setup SAM2 (Optional but Recommended)
 ```bash
-python main.py --input data/raw/sketches/sketch1.jpg
+# Clone SAM2 repository
+git clone https://github.com/facebookresearch/segment-anything-2.git
+
+# Install SAM2
+cd segment-anything-2
+pip install -e .
+
+# Download SAM2 model (small version recommended)
+# Download from: https://github.com/facebookresearch/segment-anything-2/releases
+# Place in project root:
+# - sam2_hiera_small.pt
+# - sam2_hiera_s.yaml
 ```
 
-#### Advanced Usage
-
-Batch process multiple sketches:
+#### 6. Run Setup Script
 ```bash
-python main.py --input data/raw/sketches/ --batch
+python setup_project.py
 ```
 
-Specify output directory:
+### Running Pipeline
+
+#### **Full Automatic Pipeline (Recommended)**
 ```bash
-python main.py --input sketch.jpg --output my_output/
+# Process all images in input_data/raw_sketches/
+python src/full_sketch2cad_pipeline.py
+
+# Process specific image
+python src/full_sketch2cad_pipeline.py --image "path/to/your/image.jpg"
+
+# Test without saving
+python src/full_sketch2cad_pipeline.py --no-save
 ```
 
-Use custom configuration:
+#### **Legacy Pipeline**
 ```bash
-python main.py --input sketch.jpg --config my_config.yaml
+# Process default image (latest in intermediate_data/)
+python src/sketch2cad_pipeline.py
+
+# Process specific image
+python src/sketch2cad_pipeline.py --image path/to/sketch.jpg
+
+# Custom project directory
+python src/sketch2cad_pipeline.py --project-dir /path/to/project
+
+# Process without saving files
+python src/sketch2cad_pipeline.py --no-save
 ```
 
-Enable verbose logging:
+#### **Jupyter Notebooks:**
+1. Open `notebooks/2_extract_deepLSD_v3.ipynb`
+2. Run cells sequentially
+3. Results saved to `intermediate_data/` and `outputs/`
+
+#### **Web Interface (TODO):**
 ```bash
-python main.py --input sketch.jpg --verbose
+streamlit run streamlit_app/app.py
 ```
 
-## Project Structure
+## 📁 Input/Output Formats
 
+### **Input**
+- **Location**: `input_data/raw_sketches/`
+- **Formats**: PNG, JPG, JPEG, TIFF, BMP
+- **Recommended**: Clean hand sketches with good contrast
+- **Size**: Any size (automatically processed)
+
+### **Output**
+- **Location**: `output_data/`
+- **JSON**: Complete detection data with metadata
+- **PNG**: Visualization with color-coded elements
+- **PDF**: Technical drawing (TODO)
+- **DXF**: CAD format (TODO)
+
+### **JSON Structure**
+```json
+{
+  "timestamp": "20260511_143013",
+  "source_image": "path/to/image.jpg",
+  "image_size": {"height": 1200, "width": 800},
+  "method": "DeepLSD v6 - filtered H/V + contour circles",
+  "rectangles": [
+    {
+      "label": "outer",
+      "x1": 100, "y1": 200, "x2": 600, "y2": 800,
+      "width_px": 500, "height_px": 600
+    }
+  ],
+  "circles": [
+    {
+      "label": "mounting_1",
+      "cx": 200, "cy": 300, "radius_px": 25,
+      "radius_mm": null, "circularity": 0.85
+    }
+  ],
+  "lines": {
+    "main": [...],
+    "dimension_lines": [...],
+    "ticks": [...]
+  },
+  "statistics": {
+    "deeplsd_raw": 344,
+    "main": 54,
+    "dimension": 38,
+    "ticks": 53,
+    "circles_mounting": 4
+  },
+  "notes": {
+    "scale_hint": "857mm = external width"
+  }
+}
 ```
-sketch_to_cad/
-├── README.md                 # This file
-├── requirements.txt          # Python dependencies
-├── .gitignore                # Git ignore rules
-├── config/                   # Configuration files
-│   ├── __init__.py
-│   ├── config.yaml           # Main configuration
-│   └── templates.yaml        # CAD templates definition
-├── src/                      # Source code
-│   ├── __init__.py
-│   ├── pipeline.py           # Main processing pipeline
-│   ├── sketch_analyzer.py    # Sketch analysis (CV/OCR)
-│   ├── cad_generator.py      # CAD generation (FreeCAD)
-│   └── utils.py              # Utility functions
-├── data/                     # Data directories
-│   ├── raw/sketches/         # Input sketches
-│   ├── processed/            # Processed images
-│   └── labels/               # Manual labels
-├── models/                   # ML models
-│   └── checkpoints/          # Pre-trained models
-├── templates/                # CAD templates
-│   ├── cad_templates.fcstd   # FreeCAD templates
-│   └── dxf_examples/         # DXF examples
-├── output/                   # Generated files
-│   ├── cad_files/            # CAD exports
-│   └── logs/                 # Log files
-├── tests/                    # Test suite
-│   └── test_pipeline.py      # Pipeline tests
-├── docs/                     # Documentation
-│   └── diagram.mmd           # Architecture diagram
-└── main.py                   # Entry point
-```
 
-## Configuration
+## 🔬 Development
 
-### Main Configuration (config/config.yaml)
+### **Notebooks Development**
+- Use `notebooks/` for experimentation
+- `2_extract_deepLSD_v3.ipynb` is the current reference implementation
+- `vertical_slice_0.ipynb` for end-to-end testing
 
-Key settings:
-- Image processing parameters
-- OCR configuration
-- Shape detection thresholds
-- CAD generation settings
-- Logging configuration
+### **Code Structure**
+- **Core pipeline**: `src/sketch2cad_pipeline.py`
+- **Alternative methods**: `src/alternative_detectors.py`
+- **Configuration**: `config/` directory
+- **Tests**: `tests/` directory
 
-### Templates Configuration (config/templates.yaml)
+### **Adding New Detectors**
+1. Inherit from `LineDetector` in `alternative_detectors.py`
+2. Implement `detect_lines()` and `load_model()` methods
+3. Add to `create_detector()` factory function
+4. Update pipeline to support new detector
 
-Define:
-- CAD templates with default parameters
-- Shape-to-template mapping rules
-- Dimension extraction patterns
-
-## Supported Templates
-
-- **Mirror**: Rectangular mirrors with frames
-- **Frame**: Picture frames with inner/outer dimensions
-- **Panel**: Wall panels with customizable dimensions
-
-## Adding New Templates
-
-1. Define template in `config/templates.yaml`
-2. Add generation logic in `src/cad_generator.py`
-3. Update shape mapping if needed
-
-## Development
-
-### Running Tests
-
+### **Testing**
 ```bash
-pytest tests/
+# Run unit tests
+python -m pytest tests/
+
+# Run specific notebook
+jupyter notebook notebooks/2_extract_deepLSD_v3.ipynb
 ```
 
-### Code Style
+## 🎯 Use Cases
 
-Follow PEP 8 guidelines. Use type hints where possible.
+### **Current: Mirror Sketches**
+- Successfully processes hand-drawn mirror designs
+- Extracts rectangular frames and mounting holes
+- Generates technical drawings with dimensions
 
-## Troubleshooting
+### **Target Applications**
+- **Construction**: Window/door sketches
+- **Manufacturing**: Part design sketches
+- **Architecture**: Floor plan sketches
+- **Engineering**: Technical diagrams
 
-### FreeCAD Issues
+## 🤝 Contributing
 
-If FreeCAD is not available, the system will generate mock data for testing purposes.
+1. **Fork** repository
+2. **Create** feature branch
+3. **Implement** changes with tests
+4. **Document** new features
+5. **Submit** pull request
 
-### OCR Issues
+### **Development Guidelines**
+- Follow PEP 8 style
+- Add type hints for new functions
+- Include docstrings with examples
+- Update README for new features
+- Test with sample sketches
 
-- Ensure Tesseract is properly installed
-- Check image quality and resolution
-- Adjust OCR configuration in config.yaml
+## 📄 License
 
-### Performance Issues
+This project is licensed under MIT License - see LICENSE file for details.
 
-- Reduce image size in config.yaml
-- Adjust contour detection parameters
-- Use batch processing for multiple files
+## 🙏 Acknowledgments
 
-## Contributing
+- **DeepLSD**: Line segment detection model
+- **OpenCV**: Computer vision operations
+- **PyTorch**: Deep learning framework
+- **Streamlit**: Web interface framework
+- **Matplotlib**: Visualization
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+## 📞 Contact
 
-## License
+For questions, issues, or contributions:
+- **GitHub**: [tomaszbielNCI/Intelligent_Sketch2CAD](https://github.com/tomaszbielNCI/Intelligent_Sketch2CAD)
+- **Issues**: [GitHub Issues](https://github.com/tomaszbielNCI/Intelligent_Sketch2CAD/issues)
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+---
 
-## Contact
-
-For questions and support, please open an issue on GitHub.
+**Note**: This is an active research project. Some features are in development (marked as TODO). The core pipeline is functional for mirror sketch processing.

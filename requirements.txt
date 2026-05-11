@@ -1,4 +1,4 @@
-opencv-python==4.10.0.84
+opencv-contrib-python==4.10.0.84
 pytesseract==0.3.13  # OCR dims
 numpy>=1.24.0
 pandas>=2.0.0
@@ -21,3 +21,4 @@ tqdm>=4.65.0
 # lub: pip install sam2
 # Dodatkowe zależności dla SAM2
 # opencv-python, matplotlib, pillow, numpy - już zainstalowane
+anthropic>=0.25.0  # Claude API
