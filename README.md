@@ -178,6 +178,7 @@ This project was developed for **Intelligent Agents and Process Automation** mod
 
 Automation type demonstrated:
 - **AI/Agentic automation**: DeepLSD + SAM2 for intelligent line detection
+- **RDA-based automation proposal** procesing batch files without human in loop
 
 ## 📄 License
 
