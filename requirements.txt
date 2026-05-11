@@ -18,3 +18,28 @@ pyyaml>=6.0
 # cadquery==2.4.0          # Parametric CAD (TODO)
 # torchvision>=0.15.0      # For YOLO (TODO)
 # streamlit==1.38.0        # Web UI (TODO)
+
+# ============================================
+# EXTERNAL MODELS (install separately - NOT via pip)
+# ============================================
+# SAM2 (Segment Anything 2) - required for background removal
+# https://github.com/facebookresearch/sam2
+# Installation:
+#   git clone https://github.com/facebookresearch/sam2.git
+#   cd sam2
+#   pip install -e .
+#   # Download model: sam2_hiera_small.pt (place in project root)
+#   # Download config: sam2_hiera_s.yaml (place in project root)
+
+# DeepLSD - required for line detection
+# https://github.com/tom-rohr/DeepLSD
+# Already included as git submodule in DeepLSD/ folder
+# Model weights required: DeepLSD/weights/deeplsd_md.tar
+# Download from: https://github.com/tom-rohr/DeepLSD/releases
+
+# ============================================
+# NOTES
+# ============================================
+# All dependencies above are tested with Python 3.10-3.12
+# For SAM2, PyTorch 2.0+ is required (already in core dependencies)
+# DeepLSD runs on CPU (CUDA optional but not required)

@@ -20,35 +20,7 @@ Raw Sketch → SAM2 (background removal) → Adaptive Threshold → Component Fi
 
 This project provides a complete pipeline for converting hand sketches to technical drawings, with support for multiple line detection methods and extensible architecture.
 
-### 📁 Project Structure
 
-```
-Intelligent_Sketch2CAD/
-├── 📓 notebooks/                    # Jupyter notebooks for development and testing
-│   ├── 0_preprocessing_load_image.ipynb
-│   ├── 1_extract_contours_*.ipynb
-│   ├── 2_extract_deepLSD_*.ipynb
-│   └── vertical_slice_0.ipynb
-├── 📂 src/                          # Core pipeline modules
-│   ├── full_sketch2cad_pipeline.py    # Complete pipeline with SAM2 + DeepLSD (recommended)
-│   ├── alternative_detectors.py        # Alternative line detection methods (TODO)
-│   └── __init__.py                    # Package initialization
-├── 📂 models/                       # Model storage
-├── 📂 streamlit_app/               # Web interface (TODO)
-│   └── app.py                        # Streamlit UI stub
-├── 📂 input_data/                   # Input sketches
-│   └── raw_sketches/               # Raw sketch images
-├── 📂 intermediate_data/             # Preprocessed images and intermediate results
-├── 📂 output_data/                  # Generated technical drawings and JSON results
-├── 📂 archive/                      # Archived files and test scripts
-├── 📂 DeepLSD/                      # DeepLSD model and code
-├── 📂 docs/                         # Documentation
-├── 📂 config/                       # Configuration files
-├── 📂 tests/                        # Unit tests
-├── app.py                            # Main application entry
-├── main.py                           # Alternative entry point
-└── requirements.txt                   # Python dependencies
-```
 
 ### 🔧 Core Pipeline Workflow
 
@@ -79,99 +51,6 @@ graph TD
     style F fill:#bbf,stroke:#333,stroke-width:2px
     style N fill:#9f9,stroke:#333,stroke-width:2px
 ```
-
-#### 1. **Image Preprocessing**
-- Load and convert to grayscale
-- Fix image polarity (dark/light adjustment)
-- Contour-based filtering to remove noise
-- Connected components analysis
-
-#### 2. **Thinning**
-- Apply Zhang-Suen thinning algorithm
-- Convert lines to 1-pixel width
-- Preserve connectivity
-
-#### 3. **Line Detection** (DeepLSD)
-- Load pre-trained DeepLSD model
-- Detect line segments with confidence scoring
-- Extract geometric properties (length, angle)
-
-#### 4. **Line Classification**
-- Classify lines into categories:
-  - **Main lines**: Long horizontal/vertical structural lines
-  - **Dimension lines**: Medium-length measurement lines
-  - **Tick marks**: Short diagonal marks at 45°/135°
-  - **Other**: Unclassified geometric elements
-  - **Noise**: Very short segments
-
-#### 5. **Shape Detection**
-- **Rectangles**: Filter and combine main H/V lines
-- **Circles**: Detect from skeletonized contours using circularity
-
-#### 6. **Output Generation**
-- JSON with all detected elements and metadata
-- PNG visualization with color-coded elements
-- PDF technical drawing (placeholder implementation)
-
-### 🤖 Alternative Line Detection Methods
-
-The project includes TODO stubs for alternative detection methods:
-
-#### **PaddleOCR** (`src/alternative_detectors.py`)
-- Extract text and geometric structures
-- Useful for dimension annotations
-- Multi-language support
-
-#### **YOLOv8-seg**
-- Semantic segmentation for geometric primitives
-- Deep learning-based object detection
-- Customizable for specific sketch types
-
-#### **ScanLSD**
-- Alternative line segment detector
-- Different algorithmic approach
-- Complementary to DeepLSD
-
-#### **Hybrid Detector**
-- Combine multiple methods
-- Voting mechanism for robustness
-- Confidence-weighted fusion
-
-### 🌐 Web Interface (TODO)
-
-Streamlit-based web interface (`streamlit_app/app.py`):
-
-#### Features to Implement:
-- **File Upload**: Drag-and-drop sketch upload
-- **Configuration Panel**: Adjust detection parameters
-- **Real-time Preview**: Live parameter adjustment
-- **Results Display**: Interactive visualization
-- **Download Options**: JSON, PNG, PDF exports
-- **Batch Processing**: Multiple image support
-- **Detector Comparison**: Side-by-side results
-
-### 📊 Current Capabilities
-
-#### ✅ **Working Features**
-- DeepLSD line detection with pre-trained model
-- Image preprocessing and thinning
-- Line classification by geometry
-- Rectangle and circle detection
-- JSON and PNG output generation
-- Mirror sketch processing (tested use case)
-
-#### 🚧 **TODO Features**
-- PDF technical drawing generation
-- PaddleOCR integration
-- YOLOv8-seg implementation
-- ScanLSD alternative
-- Streamlit web interface
-- Hybrid detection methods
-- Batch processing
-- Parameter optimization
-- Additional shape detection (arcs, ellipses)
-- Dimension text extraction
-- CAD model export (DXF/DWG)
 
 ## 🚀 Quick Start
 
@@ -297,9 +176,8 @@ After running the pipeline, you can:
 
 This project was developed for **Intelligent Agents and Process Automation** module at National College of Ireland.
 
-Automation types demonstrated:
+Automation type demonstrated:
 - **AI/Agentic automation**: DeepLSD + SAM2 for intelligent line detection
-- **RPA automation**: Watchdog script for folder monitoring (separate file)
 
 ## 📄 License
 
@@ -307,6 +185,6 @@ MIT License – see LICENSE file for details.
 
 ## 👤 Author
 
-Tomasz Biel – MSc in Artificial Intelligence
+Tomasz Biel – Postgraduate in Science in Artificial Intelligence
 
 **Status**: ✅ Vertical slice complete – from raw sketch to professional technical drawing (PDF/DXF), fully compatible with **FreeCAD** – ready for glass fitting orders
