@@ -17,9 +17,9 @@ Intelligent_Sketch2CAD/
 │   ├── 2_extract_deepLSD_*.ipynb
 │   └── vertical_slice_0.ipynb
 ├── 📂 src/                          # Core pipeline modules
-│   ├── sketch2cad_pipeline.py        # Main pipeline implementation
-│   ├── alternative_detectors.py        # TODO: Alternative line detection methods
-│   └── pipeline.py                   # Existing pipeline (preserved)
+│   ├── full_sketch2cad_pipeline.py    # Complete pipeline with SAM2 + DeepLSD (recommended)
+│   ├── alternative_detectors.py        # Alternative line detection methods (TODO)
+│   └── __init__.py                    # Package initialization
 ├── 📂 models/                       # Model storage
 ├── 📂 streamlit_app/               # Web interface (TODO)
 │   └── app.py                        # Streamlit UI stub
@@ -39,14 +39,43 @@ Intelligent_Sketch2CAD/
 
 ### 🔧 Core Pipeline Workflow
 
-The main pipeline (`src/sketch2cad_pipeline.py`) implements the following workflow:
+The project provides two main pipelines:
+
+#### **Full Pipeline** (`src/full_sketch2cad_pipeline.py`) - Recommended
+Complete automation from raw image to technical drawing with SAM2 preprocessing:
 
 ```mermaid
 graph TD
-    A[Input Sketch] --> B[Preprocessing]
-    B --> C[Thinning]
-    C --> D[Line Detection]
-    D --> E[Line Classification]
+    A[Raw Image Input] --> B[SAM2 Preprocessing]
+    B --> C[Background Removal]
+    C --> D[Image Enhancement]
+    D --> E[Thinning]
+    E --> F[DeepLSD Line Detection]
+    F --> G[Line Classification]
+    G --> H[Shape Detection]
+    H --> I[Rectangle Detection]
+    H --> J[Circle Detection]
+    I --> K[Visualization]
+    J --> K
+    K --> L[JSON Export]
+    K --> M[PNG Export]
+    K --> N[PDF Export]
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style F fill:#bbf,stroke:#333,stroke-width:2px
+    style N fill:#9f9,stroke:#333,stroke-width:2px
+```
+
+#### **Legacy Pipeline** (`src/sketch2cad_pipeline.py`) - For development
+Basic pipeline without SAM2 preprocessing:
+
+```mermaid
+graph TD
+    A[Preprocessed Image] --> B[Thinning]
+    B --> C[DeepLSD Line Detection]
+    C --> D[Line Classification]
+    D --> E[Shape Detection]
     E --> F[Rectangle Detection]
     E --> G[Circle Detection]
     F --> H[Visualization]
@@ -201,9 +230,10 @@ pip install -e .
 # - sam2_hiera_s.yaml
 ```
 
-#### 6. Run Setup Script
+#### 6. Verify Installation
 ```bash
-python setup_project.py
+# Test DeepLSD model loading
+python src/full_sketch2cad_pipeline.py --no-save
 ```
 
 ### Running Pipeline
